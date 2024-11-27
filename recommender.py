@@ -1,9 +1,5 @@
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import streamlit as st
 import pandas as pd
-from sklearn import preprocessing
-import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from tabulate import tabulate
 
