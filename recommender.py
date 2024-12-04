@@ -3,6 +3,11 @@ import pandas as pd
 from sklearn.neighbors import NearestNeighbors
 from tabulate import tabulate
 
+# Initializing Streamlit App
+st.set_page_config(layout="centered")
+st.title("Insane Song Recommender")
+
+
 class DataEntry:
     title: str
     artists: str
@@ -65,16 +70,21 @@ def run_k_nearest_algorithm(form, input_song):
 
     org_indices_kNearest = org_indices_kNearest[0]
 
+    list_entry_dataframe = []
+
     for index in org_indices_kNearest:
+        list_entry_dataframe.append([subset_with_id_and_name.loc[index].track_name, subset_with_id_and_name.loc[index].artists, subset_with_id_and_name.loc[index].album_name])
         print_table_kNearest.append(DataEntry(subset_with_id_and_name.loc[index].track_name, subset_with_id_and_name.loc[index].artists, subset_with_id_and_name.loc[index].album_name, subset_with_id_and_name.loc[index].track_id))
         value_list_kNearest.append([X_train_norm.loc[index].energy, X_train_norm.loc[index].valence, X_train_norm.loc[index].tempo, X_train_norm.loc[index].danceability, X_train_norm.loc[index].speechiness])
     
-    #df = pd.DataFrame(print_table_kNearest, columns=["Artists"])
+    df_entries = pd.DataFrame(list_entry_dataframe, columns=["Song","Artists","Album"])
+    st.dataframe(df_entries, width=1000, hide_index=True, column_order=["Artists","Song","Album"])
     # print outcome
     #st.list(df)
-    for entry in print_table_kNearest:
-        st.markdown(str(entry.artists) + " | " + str(entry.title) + ", Album: " + str(entry.album))
+    #for entry in print_table_kNearest:
+    #    st.markdown(str(entry.artists) + " | " + str(entry.title) + ", Album: " + str(entry.album))
 
+    
     #form.write("\n\nKNearest Neighbours")
     #form.write(tabulate(print_table_kNearest, headers=['Artists','Trackname']))  
     
@@ -84,14 +94,9 @@ def generate_playlist(input_song, form):
         run_k_nearest_algorithm(form, input_song)
 
 
-# Initializing Streamlit App
-st.title("Insane Song Recommender")
-
 with st.form("song_input"):
-    #song_input = st.multiselect(options=st.session_state.data["track_name"], label="Input Song pls", max_selections=1)
-    song_input = st.selectbox(options=st.session_state.data_classes, label="Input Song pls",placeholder="Search for a Song", index=None, key="song_input_widget", format_func=lambda entry: str(entry.artists) + " | " + str(entry.title) + " | " + str(entry.album))
+    song_input = st.selectbox(options=st.session_state.data_classes, label="Please search for a song you like",placeholder="Search for a Song", index=None, key="song_input_widget", format_func=lambda entry: "Artists: " + (str(entry.artists)[:20] + ".." if len(str(entry.artists)) > 20 else str(entry.artists)) + " || Song: " + str(entry.title) + " || Album: " + str(entry.album))
     st.form_submit_button("Generate Playlist", on_click=generate_playlist(song_input, st))
-    #st.form_submit_button("Generate Playlist", on_click=st.write(song_input.track_id))
     
     
    
