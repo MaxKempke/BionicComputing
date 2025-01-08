@@ -7,7 +7,7 @@ from tabulate import tabulate
 st.set_page_config(layout="centered")
 st.title("Insane Song Recommender")
 
-
+# dataclass for handling
 class DataEntry:
     title: str
     artists: str
@@ -20,6 +20,7 @@ class DataEntry:
         self.album = album
         self.track_id = track_id
 
+# session variables
 if 'data_load_done' not in st.session_state:    
     st.session_state.data_load_done = False
     
@@ -34,14 +35,13 @@ if 'data' not in st.session_state:
 def run_k_nearest_algorithm(form, input_song):
     # max songs 89741
     song_count = 89741
+
     # Generate Subset with song_count and needed columns
     subset_with_id_and_name = st.session_state.data
     subset = subset_with_id_and_name[['energy','valence','tempo','danceability','speechiness']]
     
     # extract input_song from data set
-    #input_song_id = st.session_state.data.loc[st.session_state.data["track_id"] == input_song.track_id]
     input_song_index = subset_with_id_and_name.loc[st.session_state.data["track_id"] == input_song.track_id].index
-    # start_value = input_song_id[['energy', 'valence', 'tempo', 'danceability', 'speechiness']]
     
     # Normalize Data
     norm_subset = subset
@@ -79,14 +79,6 @@ def run_k_nearest_algorithm(form, input_song):
     
     df_entries = pd.DataFrame(list_entry_dataframe, columns=["Song","Artists","Album"])
     st.dataframe(df_entries, width=1000, hide_index=True, column_order=["Artists","Song","Album"])
-    # print outcome
-    #st.list(df)
-    #for entry in print_table_kNearest:
-    #    st.markdown(str(entry.artists) + " | " + str(entry.title) + ", Album: " + str(entry.album))
-
-    
-    #form.write("\n\nKNearest Neighbours")
-    #form.write(tabulate(print_table_kNearest, headers=['Artists','Trackname']))  
     
 
 def generate_playlist(input_song, form):
